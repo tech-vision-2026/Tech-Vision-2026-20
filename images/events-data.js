@@ -1,0 +1,55 @@
+/* =========================================================
+   SHARED EVENT DATA — used by index.html and register.html
+========================================================= */
+  window.TV_ICONS = {
+    debugging: `<svg viewBox="0 0 200 200" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path d="M60 40 L40 20 M140 40 L160 20"/><path d="M70 60 Q100 40 130 60"/><ellipse cx="100" cy="115" rx="38" ry="50"/><path d="M62 100 L30 90 M62 130 L30 140 M62 115 L25 115"/><path d="M138 100 L170 90 M138 130 L170 140 M138 115 L175 115"/><path d="M76 155 Q100 175 124 155"/><circle cx="86" cy="105" r="4" fill="currentColor"/><circle cx="114" cy="105" r="4" fill="currentColor"/></svg>`,
+    ai: `<svg viewBox="0 0 200 200" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="72" y="72" width="56" height="56" rx="8"/><path d="M100 72 V40 M100 128 V160 M72 100 H40 M128 100 H160 M84 84 L60 60 M116 84 L140 60 M84 116 L60 140 M116 116 L140 140"/><circle cx="100" cy="40" r="7"/><circle cx="100" cy="160" r="7"/><circle cx="40" cy="100" r="7"/><circle cx="160" cy="100" r="7"/><circle cx="60" cy="60" r="7"/><circle cx="140" cy="60" r="7"/><circle cx="60" cy="140" r="7"/><circle cx="140" cy="140" r="7"/><circle cx="100" cy="100" r="10" fill="currentColor" stroke="none"/></svg>`,
+    model: `<svg viewBox="0 0 200 200" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M60 60 L100 40 L140 60 L140 120 L100 140 L60 120 Z"/><path d="M60 60 L100 80 L140 60 M100 80 L100 140"/><circle cx="150" cy="150" r="24"/><path d="M150 126 V132 M150 168 V174 M174 150 H168 M132 150 H126 M167 133 L163 137 M137 163 L133 167 M167 167 L163 163 M137 137 L133 133"/></svg>`,
+    quiz: `<svg viewBox="0 0 200 200" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="90" cy="100" r="60"/><ellipse cx="90" cy="100" rx="24" ry="60"/><path d="M30 100 H150 M40 70 H140 M40 130 H140"/><path d="M135 60 q14 -14 28 0 q10 12 -4 20 q-10 6 -10 18" stroke-width="7"/><circle cx="149" cy="118" r="4.5" fill="currentColor" stroke="none"/></svg>`,
+    canva: `<svg viewBox="0 0 200 200" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="82" cy="80" r="38"/><rect x="95" y="95" width="62" height="62" rx="10"/><path d="M60 150 L95 95 L130 150 Z"/></svg>`,
+    poster: `<svg viewBox="0 0 200 200" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><rect x="42" y="34" width="116" height="140" rx="6"/><path d="M42 130 L78 92 L100 116 L128 78 L158 118" /><circle cx="70" cy="66" r="10"/><path d="M60 174 V186 M140 174 V186 M42 174 H158" stroke-width="4"/></svg>`,
+    startup: `<svg viewBox="0 0 200 200" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M100 30 C124 30 140 52 140 76 C140 96 128 106 122 116 L78 116 C72 106 60 96 60 76 C60 52 76 30 100 30 Z"/><path d="M84 116 L84 138 L116 138 L116 116 M90 150 H110 M94 162 H106"/><path d="M100 56 L100 96 M88 68 L100 56 L112 68" stroke-width="6"/></svg>`,
+    bgmi: `<svg viewBox="0 0 200 200" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M100 28 L156 50 V102 C156 138 132 162 100 174 C68 162 44 138 44 102 V50 Z"/><circle cx="100" cy="100" r="30"/><path d="M100 70 V80 M100 120 V130 M70 100 H80 M120 100 H130"/></svg>`,
+    freefire: `<svg viewBox="0 0 200 200" fill="none" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M100 26 C70 60 56 84 56 112 C56 144 78 168 100 168 C122 168 144 144 144 112 C144 96 138 84 128 72 C128 92 118 100 110 96 C116 74 106 48 100 26 Z"/><path d="M100 168 L70 150 M100 168 L130 150 M100 168 V190" stroke-width="4" opacity="0.6"/></svg>`,
+  };
+
+  window.TV_EVENTS = [
+    { key: 'debugging', day: 'DAY 1', title: 'Debugging', tagline: 'Spot the bug if you can', fee: 50, img: 'images/debugging.jpg',
+      desc: 'A live code hunt — spot, trace and fix the bug before the clock runs out.',
+      rules: ['Code will be given on the spot.', 'Language: Python.', 'Systems will be provided.'],
+      stats: { duration: '40-60 mins', team: '1', date: 'TBA', podium: '1' } },
+    { key: 'ai', day: 'DAY 2', title: 'A.I.', tagline: 'Artificial Intelligence Powered Creation', fee: 50, img: 'images/ai.jpg',
+      desc: 'Turn a surprise prompt into something real, using nothing but AI tools and your instincts.',
+      rules: ['Generate something using A.I. tools.', 'Topic will be given on the spot.', 'Systems will be provided.'],
+      stats: { duration: '40-60 mins', team: '1', date: 'TBA', podium: '1' } },
+    { key: 'model', day: 'DAY 2', title: 'Model Making', tagline: 'Design, Construct, Transform', fee: 150, img: 'images/model.jpg',
+      desc: 'Build a working model around IoT, Green IT and beyond — then defend it in front of the judges.',
+      rules: ['Model should be based on IoT, Green IT, etc.', 'Brief presentation/explanation may be required.', 'Judged on correctness, efficiency, clarity & final decision of judges.', 'Bring your own peripherals.'],
+      stats: { duration: '40-60 mins', team: '1-5', date: 'TBA', podium: 'Cash Prize' } },
+    { key: 'quiz', day: 'DAY 2', title: 'Tech Quiz', tagline: 'Think fast. Answer smart.', fee: 40, img: 'images/quiz.jpg',
+      desc: 'Rapid-fire tech trivia. One shot, limited time, no second guesses.',
+      rules: ['Individual participation only.', 'Limited time for each question.', 'Tie-breaker round in case of a tie.', "Judges' decision will be final."],
+      stats: { duration: '10-15 mins', team: '1', date: 'TBA', podium: '1' } },
+    { key: 'canva', day: 'DAY 1', title: 'Canva Arena', tagline: 'Think creative. Design smart.', fee: 50, img: 'images/canva.jpg',
+      desc: 'A surprise theme, a blank canvas, and free elements only — design under pressure.',
+      rules: ['Theme will be announced on the spot.', 'Use only Canva free elements.', 'Canva Pro is not allowed.', 'External images are not allowed.', 'Systems & Canva account provided.'],
+      stats: { duration: '40 mins', team: '1', date: 'TBA', podium: '1' } },
+    { key: 'poster', day: 'DAY 1', title: 'Techno Poster Making', tagline: 'Create. Express. Inspire.', fee: 40, img: 'images/poster.jpg',
+      desc: 'Hand-made, tech-themed posters — brought to life with whatever materials you carry in.',
+      rules: ['Topic will be given on the spot.', 'Hand-made posters only.', 'Bring your own materials.'],
+      stats: { duration: '40-60 mins', team: '1', date: 'TBA', podium: '1' } },
+    { key: 'startup', day: 'DAY 1', title: 'Startup Idea Competition', tagline: 'Think big. Start smart.', fee: 120, img: 'images/startup.jpg',
+      desc: 'Pitch an original, tech-driven startup idea and defend it in front of a judging panel.',
+      rules: ['Idea must be new & tech-related (AI, ML, IoT, cybersecurity, etc.).', 'Submit a one-page doc with topic name & short description at registration.', 'No plagiarism or unethical conduct — instant disqualification.', 'Bring your own pen drive or PPT; system provided for presentation.'],
+      stats: { duration: '15-20 mins', team: '1-3', date: 'TBA', podium: 'Cash Prize' } },
+    { key: 'bgmi', day: 'DAY 2', title: 'B.G.M.I', tagline: 'Survive, Thrive, Dominate.', fee: '100 (squad)', img: 'images/bgmi.jpg',
+      desc: 'Squad up and drop into Erangel, Sanhok or Vikendi. Last squad standing wins the arena.',
+      rules: ['Room ID & password shared 15 mins before the match.', 'Late teams may be disqualified.', 'Hacks or unfair means = immediate disqualification.', 'Maps: Erangel, Sanhok, Vikendi.', 'Bring your own peripherals.'],
+      stats: { duration: '30 mins', team: '4', date: 'TBA', podium: '1' } },
+    { key: 'freefire', day: 'DAY 1', title: 'Free Fire', tagline: 'Reload, Aim, Fire!', fee: '100 (squad)', img: 'images/freefire.jpg',
+      desc: 'Bermuda, Purgatory or Kalahari — drop, loot, and fight to be the last squad in the fire.',
+      rules: ['Room ID & password shared 15 mins before the match.', 'Late teams may be disqualified.', 'Hacks or unfair means = immediate disqualification.', 'Maps: Bermuda, Purgatory, Kalahari.', 'Bring your own peripherals.'],
+      stats: { duration: '30 mins', team: '4', date: 'TBA', podium: '1' } },
+  ];
+
+  window.TV_ACCENTS = ['#ff2ec4', '#4deeea', '#b026ff', '#ff9a3c', '#4deeea', '#ff2ec4', '#b026ff', '#4deeea', '#ff5a4d'];

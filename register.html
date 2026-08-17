@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — TECH VISION 2026-27</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="register-body">
+
+  <!-- ================= PERMANENT VIDEO BACKGROUND ================= -->
+  <video autoplay loop muted playsinline class="bg-video-loop">
+    <source src="images/cyberpunk-bg.mp4" type="video/mp4">
+  </video>
+
+  <nav id="site-nav" class="scrolled">
+    <div class="nav-inner">
+     <a href="index.html" class="nav-logo" style="display: flex; align-items: center;">
+  <img src="images/Orange & White Attitude WhatsApp DP Profile Picture (2) (1).png" alt="Tech Vision Logo" style="height: 125px; width: auto; object-fit: contain;">
+</a>
+      <button id="nav-toggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-links" id="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#events">Events</a>
+        <a href="index.html#schedule">Schedule</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="#" id="nav-profile-tab" class="hidden" style="color: var(--cyan);">Profile</a>
+        <a href="index.html" class="nav-register">&larr; Back to Site</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="register-main">
+    <div class="bg-circuit"></div>
+
+    <section class="register-hero reveal in-view" id="hero-section">
+      <span class="eyebrow">// TECH VISION 2026-27</span>
+      <h1 class="section-title">REGISTER<br><span class="grad-text">YOUR SPOT</span></h1>
+      <p class="lede">Pick your arenas, fill in your squad's details, and lock in your entry. One form, every event.</p>
+    </section>
+
+    <section class="register-wrap">
+      
+      <!-- ==========================================
+           PARTICIPANT ID CARD & QR CODE SECTION 
+      =========================================== -->
+      <div id="user-profile-section" class="reg-ticket hidden" style="margin-bottom: 40px; text-align: center; border: 1px solid var(--cyan); box-shadow: 0 0 30px rgba(78, 238, 234, 0.1);">
+        <div class="ticket-glow"></div>
+        
+        <!-- ID Card Header -->
+        <div style="border-bottom: 1px dashed var(--line); padding-bottom: 20px; margin-bottom: 20px;">
+          <h2 style="font-family: 'Orbitron', sans-serif; color: var(--cyan); margin: 0; font-size: 1.5rem; letter-spacing: 2px;">TECH VISION 2026-27</h2>
+          <span style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--ink-dim); letter-spacing: 3px;">OFFICIAL PARTICIPANT ID</span>
+        </div>
+
+        <!-- Profile Picture Display -->
+        <div style="margin: 20px auto;">
+          <img id="profile-display-img" src="" alt="Profile Picture" style="width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 3px solid var(--magenta); box-shadow: 0 0 20px rgba(255, 46, 196, 0.4); display: none;">
+        </div>
+
+        <!-- Dynamic QR Code -->
+        <div style="margin: 24px 0;">
+          <img id="profile-qr-code" src="" alt="Participant QR Code" style="border: 4px solid #fff; border-radius: 12px; width: 150px; height: 150px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+          <p style="font-family: 'Space Mono', monospace; font-size: 10px; color: var(--ink-dim); margin-top: 10px;">SCAN AT DESK FOR ENTRY</p>
+        </div>
+
+        <!-- Participant Details -->
+        <h2 class="ticket-title" id="profile-name" style="margin-bottom: 8px;">PARTICIPANT NAME</h2>
+        <p style="font-family: 'Space Mono', monospace; color: var(--ink-dim); margin-bottom: 24px; font-size: 13px;" id="prof-college">—</p>
+        
+        <div class="ticket-row" style="text-align: left;"><span>Contact</span><strong id="prof-contact">—</strong></div>
+        <div class="ticket-row" style="text-align: left;"><span>Arenas</span><strong id="prof-events">—</strong></div>
+        <div class="ticket-row" style="text-align: left;"><span>Total Fee</span><strong id="prof-fee" style="color: var(--cyan);">&#8377;0</strong></div>
+        
+        <div class="ticket-actions" style="margin-top: 30px; justify-content: center; gap: 14px;">
+          <a href="https://wa.me/917738505417" target="_blank" rel="noopener" class="event-cta" style="padding: 10px 16px;">WhatsApp Support</a>
+          <button type="button" id="clear-profile-btn" class="btn-detail" style="cursor:pointer; background: rgba(255,46,196,0.1); border-color: var(--magenta); padding: 10px 16px;">Log Out / New Entry</button>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           MAIN REGISTRATION FORM 
+      =========================================== -->
+      <form id="reg-form" class="reg-form reveal in-view" novalidate>
+
+        <div class="form-block">
+          <h3 class="form-block-title">01 &middot; Your Details</h3>
+          <div class="form-grid">
+            <label class="field">
+              <span>Full Name *</span>
+              <input type="text" name="name" required placeholder="Enter your full name">
+            </label>
+            <label class="field">
+              <span>WhatsApp Number *</span>
+              <input type="tel" name="phone" required pattern="[0-9]{10}" placeholder="10-digit number">
+            </label>
+            <label class="field">
+              <span>Email *</span>
+              <input type="email" name="email" required placeholder="you@example.com">
+            </label>
+            <label class="field">
+              <span>College / Institution *</span>
+              <input type="text" name="college" required placeholder="Enter your college name">
+            </label>
+            
+            <label class="field">
+              <span>Profile Picture (Upload) *</span>
+              <input type="file" name="profilepic" accept="image/*" required style="width: 100%; padding: 13px 16px; background: var(--glass); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; cursor: pointer;">
+            </label>
+            
+            <label class="field">
+              <span>College ID / Fee Receipt (Upload) *</span>
+              <input type="file" name="idfile" accept="image/*,application/pdf" required style="width: 100%; padding: 13px 16px; background: var(--glass); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; cursor: pointer;">
+            </label>
+          </div>
+        </div>
+
+        <div class="form-block">
+          <h3 class="form-block-title">02 &middot; Choose Your Arenas</h3>
+          <p class="form-block-sub">Select every event you're locking in. Fee updates live below.</p>
+
+          <div class="day-select-group">
+            <span class="day-select-label">10TH SEPT (DAY 1)</span>
+            <div class="event-checks" data-day="1"></div>
+          </div>
+          <div class="day-select-group">
+            <span class="day-select-label">11TH SEPT (DAY 2)</span>
+            <div class="event-checks" data-day="2"></div>
+          </div>
+        </div>
+
+        <div class="form-block" style="border: 1px solid #3560a5; background: rgba(255, 43, 109, 0.1); padding: 24px; border-radius: 12px; text-align: center; box-shadow: 0 0 15px rgba(255, 43, 109, 0.2);">
+          <h3 style="color: #ff2b6d; font-family: 'Orbitron', sans-serif; font-size: 1.2rem; margin-bottom: 12px; letter-spacing: 1px;">⚠️ IMPORTANT NOTICE</h3>
+          <p style="color: #fff; font-size: 1rem; margin: 0; line-height: 1.5;">Report at the venue on time. Latecomers will be strictly disqualified from the event. No excuses will be entertained.</p>
+          <input type="hidden" name="team" value="">
+        </div>
+
+        <div class="total-bar">
+          <div>
+            <span class="total-label">Total Registration Fee</span>
+            <span class="total-sub" id="total-events-sub">No events selected yet</span>
+          </div>
+          <div class="total-amount" id="total-amount">&#8377;0</div>
+        </div>
+
+        <div class="payment-section" style="text-align: center; margin: 30px 0; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 16px; border: 1px solid var(--neon, #4deeea);">
+          <h3 style="color: #fff; margin-bottom: 15px; font-family: 'Orbitron', sans-serif;">Scan to Pay</h3>
+          
+          <img src="images/qr-code.jpg" alt="Payment QR Code" style="max-width: 200px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+          
+          <div style="text-align: left;">
+            <label for="payment-proof" style="color: #a0a0a0; font-size: 0.9rem; margin-bottom: 8px; display: block;">Upload Payment Screenshot *</label>
+            <input type="file" id="payment-proof" accept="image/*" required style="width: 100%; padding: 10px; background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-register-big submit-btn">
+          <span>CONFIRM REGISTRATION</span>
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <p class="form-note">Fees are collected at the venue / by the committee on confirmation. Carry your college ID and fee receipt &mdash; entry isn't valid without them.</p>
+      </form>
+    </section>
+  </main>
+
+  <script src="events-data.js"></script>
+  <script src="register.js"></script>
+</body>
+</html>

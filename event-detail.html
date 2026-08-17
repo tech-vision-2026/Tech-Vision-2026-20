@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details — TECH VISION 2026-27</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="register-body">
+
+  <!-- ================= PERMANENT VIDEO BACKGROUND ================= -->
+  <video autoplay loop muted playsinline class="bg-video-loop">
+    <source src="images/cyberpunk-bg.mp4" type="video/mp4">
+  </video>
+
+  <nav id="site-nav" class="scrolled">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" style="display: flex; align-items: center;">
+  <img src="images/Orange & White Attitude WhatsApp DP Profile Picture (2) (1).png" alt="Tech Vision Logo" style="height: 125px; width: auto; object-fit: contain;">
+</a>
+      <div class="nav-links">
+        <a href="index.html#events">&larr; Back to Arenas</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="register-main">
+    <div class="bg-circuit"></div>
+
+    <div id="event-detail-content" class="reveal in-view">
+      <span class="eyebrow" id="det-day">// DAY X</span>
+      <h1 class="section-title" id="det-title">LOADING...</h1>
+      <p class="lede" id="det-tagline" style="color: var(--cyan); margin-bottom: 20px;"></p>
+      
+      <div class="form-block">
+        <h3 class="form-block-title">Overview</h3>
+        <p class="lede" id="det-desc" style="font-size: 1rem;"></p>
+      </div>
+
+      <div class="form-block">
+        <h3 class="form-block-title">Rules &amp; Guidelines</h3>
+        <ul class="ev-rules" id="det-rules" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></ul>
+      </div>
+
+      <div class="form-block">
+        <h3 class="form-block-title">Arena Stats</h3>
+        <div class="meta-row" style="margin-top: 14px;">
+          <div class="meta-chip"><span class="meta-label">Duration</span><span class="meta-value" id="det-duration">—</span></div>
+          <div class="meta-chip"><span class="meta-label">Team Size</span><span class="meta-value" id="det-team">—</span></div>
+          <div class="meta-chip"><span class="meta-label">Prize / Podium</span><span class="meta-value" id="det-podium">—</span></div>
+          <div class="meta-chip"><span class="meta-label">Fee</span><span class="meta-value" id="det-fee">₹0</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 40px; display: flex; gap: 16px; flex-wrap: wrap;">
+        <a href="register.html" id="det-register-btn" class="btn-register-big">
+          <span>REGISTER FOR THIS ARENA</span>
+        </a>
+        <a href="index.html#events" class="btn-secondary" style="border-radius: 999px; padding: 20px 30px;">Explore Other Arenas</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="events-data.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const eventKey = params.get('event');
+      const events = window.TV_EVENTS || [];
+      const ev = events.find(e => e.key === eventKey) || events[0];
+
+      if (ev) {
+        document.title = `${ev.title} — TECH VISION 2026-27`;
+        document.getElementById('det-day').textContent = `// ${ev.day}`;
+        document.getElementById('det-title').textContent = ev.title;
+        document.getElementById('det-tagline').textContent = `"${ev.tagline}"`;
+        document.getElementById('det-desc').textContent = ev.desc;
+        
+        const rulesEl = document.getElementById('det-rules');
+        rulesEl.innerHTML = ev.rules.map(r => `<li>${r}</li>`).join('');
+
+        document.getElementById('det-duration').textContent = ev.stats.duration;
+        document.getElementById('det-team').textContent = ev.stats.team;
+        document.getElementById('det-podium').textContent = ev.stats.podium;
+        document.getElementById('det-fee').textContent = `\u20B9${ev.fee}`;
+        document.getElementById('det-register-btn').href = `register.html?event=${encodeURIComponent(ev.title)}`;
+      }
+    });
+  </script>
+</body>
+</html>
