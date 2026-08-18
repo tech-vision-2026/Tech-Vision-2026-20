@@ -2,10 +2,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const EVENTS = window.TV_EVENTS || [];
 
+  // Enhanced Mobile Nav Toggle with Backdrop
   const navToggle = document.getElementById('nav-toggle');
   const navLinksWrap = document.getElementById('nav-links');
+  
+  // Create backdrop overlay if it doesn't exist
+  let navBackdrop = document.querySelector('.nav-backdrop');
+  if (!navBackdrop) {
+    navBackdrop = document.createElement('div');
+    navBackdrop.className = 'nav-backdrop';
+    document.body.appendChild(navBackdrop);
+  }
+  
+  function closeMenu() {
+    if (navLinksWrap) navLinksWrap.classList.remove('open');
+    if (navToggle) navToggle.classList.remove('open');
+    if (navBackdrop) navBackdrop.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+  
+  function openMenu() {
+    if (navLinksWrap) navLinksWrap.classList.add('open');
+    if (navToggle) navToggle.classList.add('open');
+    if (navBackdrop) navBackdrop.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  
   if (navToggle && navLinksWrap) {
-    navToggle.addEventListener('click', () => navLinksWrap.classList.toggle('open'));
+    // Toggle menu on button click
+    navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (navLinksWrap.classList.contains('open')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+    
+    // Close menu when backdrop is clicked
+    if (navBackdrop) {
+      navBackdrop.addEventListener('click', closeMenu);
+    }
+    
+    // Close menu when a link is clicked
+    navLinksWrap.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+    
+    // Close menu with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeMenu();
+      }
+    });
   }
 
   const params = new URLSearchParams(window.location.search);
@@ -58,6 +107,22 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   recalcTotal();
 
+  /* ---------- UPDATE FILE NAME WHEN UPLOADED ---------- */
+  const paymentInput = document.getElementById('payment-proof');
+  const paymentText = document.getElementById('payment-file-text');
+
+  if (paymentInput && paymentText) {
+    paymentInput.addEventListener('change', function() {
+      if (this.files && this.files.length > 0) {
+        paymentText.textContent = this.files[0].name;
+        paymentText.style.color = '#4deeea';
+      } else {
+        paymentText.textContent = 'No file chosen';
+        paymentText.style.color = '#94a3b8';
+      }
+    });
+  }
+
   /* ---------- PROFILE, ID CARD & QR CODE LOGIC ---------- */
   const form = document.getElementById('reg-form');
   const profileSection = document.getElementById('user-profile-section');
@@ -76,14 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderProfileCard(profile) {
-    // 🛡️ Added safety fallbacks (|| '') so it doesn't crash if data is missing
     document.getElementById('profile-name').textContent = (profile.name || 'UNKNOWN').toUpperCase();
     document.getElementById('prof-contact').textContent = (profile.phone || '') + '  \u00B7  ' + (profile.email || '');
     document.getElementById('prof-college').textContent = (profile.college || '').toUpperCase();
     document.getElementById('prof-events').textContent = Array.isArray(profile.events) ? profile.events.join(', ') : (profile.events || 'None');
     document.getElementById('prof-fee').textContent = '\u20B9' + (profile.totalFee || 0);
 
-    // --- Profile Picture Render Logic ---
     const profileImgEl = document.getElementById('profile-display-img');
     if (profileImgEl && profile.profilePic && profile.profilePic.base64) {
       profileImgEl.src = `data:${profile.profilePic.mimeType};base64,${profile.profilePic.base64}`;
@@ -126,6 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
       openProfileView();
       if (navLinksWrap && navLinksWrap.classList.contains('open')) {
         navLinksWrap.classList.remove('open');
+        if (navToggle) navToggle.classList.remove('open');
       }
     });
   }
@@ -176,10 +240,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const submitBtn = form.querySelector('.submit-btn');
+      const submitBtn = form.querySelector('.confirm-btn');
+      let loadingInterval;
+
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>UPLOADING & PROCESSING...</span>';
+        
+        const loadMessages = [
+          "UPLOADING FILES...", 
+          "PLEASE WAIT WHILE ID IS GETTING READY...", 
+          "MAKING QR CODE...", 
+          "VERIFYING DATA...",
+          "ALMOST THERE..."
+        ];
+        
+        let msgIndex = 0;
+        submitBtn.innerHTML = `<span>${loadMessages[0]}</span>`;
+        
+        loadingInterval = setInterval(() => {
+          msgIndex++;
+          submitBtn.innerHTML = `<span>${loadMessages[msgIndex % loadMessages.length]}</span>`;
+        }, 1500);
       }
 
       const getBase64 = (file) => new Promise((resolve, reject) => {
@@ -213,16 +294,14 @@ document.addEventListener('DOMContentLoaded', () => {
           paymentProof: paymentData
         };
 
-        // 🛡️ CRASH PROTECTION: Browser storage limit is 5MB. 
         try {
           localStorage.setItem('techvision_user_profile', JSON.stringify(formData));
         } catch (storageError) {
           console.warn("Images are too large for browser storage. Saving lite profile instead.");
-          // Agar images badi hain toh sirf details save karo taaki page crash na ho
           const liteData = { ...formData, profilePic: null, idFile: null, paymentProof: null };
           localStorage.setItem('techvision_user_profile', JSON.stringify(liteData));
         }
-
+        if (loadingInterval) clearInterval(loadingInterval);
         renderProfileCard(formData);
         openProfileView();
 
@@ -240,9 +319,34 @@ document.addEventListener('DOMContentLoaded', () => {
           alert("Error processing files. Please try again.");
           if (submitBtn) {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<span>CONFIRM REGISTRATION</span>';
+            submitBtn.innerHTML = '<span>Confirm Registration</span>';
           }
       });
+    });
+  }
+});
+
+// Apply 3D Tilt to the Registration Ticket[cite: 5]
+document.addEventListener('DOMContentLoaded', () => {
+  const ticket = document.getElementById('user-profile-section');
+  
+  if (ticket) {
+    ticket.addEventListener('mousemove', (e) => {
+      const rect = ticket.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -10; 
+      const rotateY = ((x - centerX) / centerX) * 10;
+
+      ticket.style.transition = 'none';
+      ticket.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+    });
+
+    ticket.addEventListener('mouseleave', () => {
+      ticket.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+      ticket.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
     });
   }
 });

@@ -40,8 +40,14 @@
       stats: { duration: '45 mins', team: '1', date: 'TBA', podium: '1' } },
     { key: 'startup', day: '10th Sept' , title: 'Startup Idea Competition', tagline: 'Think big. Start smart. TIMING : 11:00 AM', fee: 120, img: 'images/startup.jpg',
       desc: 'Pitch an original, tech-driven startup idea and defend it in front of a judging panel.',
-      rules: ['Idea must be new & tech-related (AI, ML, IoT, cybersecurity, etc.).', 'Submit a one-page doc with topic name & short description at registration.', 'No plagiarism or unethical conduct — instant disqualification.', 'Bring your own pen drive or PPT; system provided for presentation.'],
-      stats: { duration: 'Till completion', team: '1-3', date: 'TBA', podium: 'Cash Prize' } },
+      rules: [
+        'Idea must be new & tech-related (AI, ML, IoT, cybersecurity, etc.).', 
+        'Submit a one-page doc with topic name & short description at registration. <a href="https://drive.google.com/file/d/1A1Cx3KVMW9rzqqhHRAtBly9xxV0NO8Ra/view?usp=drivesdk" target="_blank" style="color: var(--cyan); text-decoration: underline;">Click here to view the document format.</a>', 
+        'No plagiarism or unethical conduct — instant disqualification.', 
+        'Bring your own pen drive or PPT; system provided for presentation.'
+      ],
+      stats: { duration: 'Till completion', team: '1-3', date: 'TBA', podium: 'Cash Prize' } 
+    },
     { key: 'bgmi', day: '11th Sept', title: 'B.G.M.I', tagline: 'Survive, Thrive, Dominate. TIMING : 11:00 AM', fee: '100 (squad)', img: 'images/bgmi.jpg',
       desc: 'Squad up and drop into Erangel, Sanhok or Vikendi. Last squad standing wins the arena.',
       rules: ['Room ID & password shared 15 mins before the match.', 'Late teams may be disqualified.', 'Hacks or unfair means = immediate disqualification.', 'Maps: Erangel, Sanhok, Vikendi.', 'Bring your own peripherals.'],

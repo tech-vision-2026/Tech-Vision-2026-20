@@ -414,7 +414,30 @@ body { overflow: visible; height: auto; width: auto; }
   letter-spacing: 2px; color: var(--ink); text-decoration: none;
 }
 .nav-logo span { color: var(--magenta); }
-.nav-links { display: flex; align-items: center; gap: 32px; }
+
+/* NEW: Mobile Menu Overlay Backdrop */
+.nav-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 88;
+}
+
+.nav-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav-links { 
+  display: flex; align-items: center; gap: 32px; 
+  transition: all 0.4s ease;
+}
 .nav-links a {
   color: var(--ink-dim); text-decoration: none; font-family: 'Space Mono', monospace;
   font-size: 13px; letter-spacing: 1px; text-transform: uppercase; position: relative;
@@ -428,8 +451,47 @@ body { overflow: visible; height: auto; width: auto; }
   background: linear-gradient(90deg, var(--magenta), var(--purple));
   color: #fff !important; padding: 10px 20px; border-radius: 999px; font-weight: 700;
 }
-#nav-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; }
-#nav-toggle span { width: 22px; height: 2px; background: var(--ink); display: block; }
+
+/* REDESIGNED: Hamburger Button */
+#nav-toggle { 
+  display: none; 
+  flex-direction: column; 
+  gap: 6px; 
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+  padding: 8px;
+  width: 30px;
+  height: 24px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 95;
+}
+
+#nav-toggle span { 
+  width: 24px; 
+  height: 2.5px; 
+  background: var(--cyan); 
+  display: block; 
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+}
+
+#nav-toggle.open span:nth-child(1) { 
+  transform: translateY(11px) rotate(45deg);
+  background: var(--magenta);
+}
+
+#nav-toggle.open span:nth-child(2) { 
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+#nav-toggle.open span:nth-child(3) { 
+  transform: translateY(-11px) rotate(-45deg);
+  background: var(--magenta);
+}
 
 /* ---------- generic section spacing ---------- */
 .section { position: relative; padding: 140px 32px; }
@@ -872,14 +934,57 @@ body { overflow: visible; height: auto; width: auto; }
   .day-cards { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; gap: 30px; }
   .nav-links {
-    position: fixed; top: 62px; left: 0; width: 100%; background: rgba(6,3,8,.97);
-    flex-direction: column; align-items: flex-start; padding: 24px 32px; gap: 22px;
-    transform: translateY(-120%); transition: transform .4s ease; border-bottom: 1px solid var(--line);
+    position: fixed;
+    top: 62px;
+    right: 0;
+    height: calc(100vh - 62px);
+    width: 100%;
+    max-width: 400px;
+    background: rgba(6, 3, 8, 0.99);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 32px 24px;
+    gap: 0;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    border-left: 1px solid var(--line);
+    z-index: 89;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    display: none;
   }
-  .nav-links.open { transform: translateY(0); }
-  #nav-toggle { display: flex; }
-}
+  
+  .nav-links.open { 
+    display: flex;
+    transform: translateX(0);
+  }
+  
+  .nav-links a {
+    width: 100%;
+    padding: 16px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: block;
+    color: var(--ink-dim);
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-links a:hover {
+    color: var(--cyan);
+  }
 
+  .nav-links .nav-register {
+    width: 100%;
+    text-align: center;
+    margin-top: 24px;
+    border: none;
+
+  }
+}
 
 /* =========================================================
    REGISTER PAGE
@@ -974,6 +1079,18 @@ body { overflow: visible; height: auto; width: auto; }
 @media (max-width: 700px) {
   .form-grid, .event-checks { grid-template-columns: 1fr; }
   .register-main { padding-top: 120px; }
+  
+  /* Fix for the total amount overflowing on mobile */
+  .total-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px;
+  }
+  
+  .total-amount {
+    font-size: 1.8rem; /* Scales the price down slightly for mobile */
+  }
 }
 
 /* ADD THIS FOR SMOOTHNESS & HARDWARE ACCELERATION */
@@ -1594,10 +1711,23 @@ html {
 }
 
 /* Make sure text pops against the glass */
+/* Make sure text pops against the glass */
 .detail-container h1, 
 .detail-container h2 {
   color: #fff;
   font-family: 'Orbitron', sans-serif;
+  overflow-wrap: break-word; /* Forces long words to wrap instead of breaking out */
+}
+
+/* Mobile adjustments for the detail page */
+@media (max-width: 600px) {
+  .detail-container {
+    padding: 30px 20px; /* Reduces side padding on phones to give text more room */
+  }
+  
+  .detail-container h1.section-title {
+    font-size: clamp(1.8rem, 8vw, 2.4rem); /* Slightly shrinks the giant title on small screens */
+  }
 }
 
 .detail-container p {
@@ -1725,4 +1855,1129 @@ body::before {
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
   border-bottom: none !important;
+}
+
+/* =========================================
+   SCROLL RIGHT INDICATOR BUTTON
+========================================= */
+/* =========================================
+   SCROLL RIGHT INDICATOR ARROW
+========================================= */
+.events-grid-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.slide-right-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #4deeea;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  animation: arrowBounce 1.5s infinite ease-in-out;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  filter: drop-shadow(0 0 10px #4deeea) drop-shadow(0 0 20px #4deeea);
+}
+
+.slide-right-btn svg {
+  stroke: #4deeea;
+  display: block;
+}
+
+.slide-right-btn:hover svg {
+  stroke: #ffffff;
+}
+
+.slide-right-btn.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+@keyframes arrowBounce {
+  0%, 100% {
+    transform: translateY(-50%) translateX(0);
+  }
+  50% {
+    transform: translateY(-50%) translateX(8px);
+  }
+}
+
+/* =========================================
+   PREMIUM LUXURY MOBILE MENU & CROSS ICON
+========================================= */
+@media (max-width: 900px) {
+  /* Full screen, centered, dark glass menu */
+  .nav-links {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100vh; 
+    background: rgba(10, 5, 15, 0.95); /* Deep luxury dark */
+    backdrop-filter: blur(24px); 
+    -webkit-backdrop-filter: blur(24px);
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    gap: 40px; 
+    transform: translateY(-100%); 
+    transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1); 
+    border-bottom: none; 
+    z-index: 90;
+  }
+  .nav-links.open { 
+    transform: translateY(0); 
+  }
+  
+  /* Luxury large typography for links */
+  .nav-links a {
+    font-size: 22px;
+    letter-spacing: 4px;
+  }
+
+  /* Animated Hamburger to Cross */
+  #nav-toggle { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    width: 32px; 
+    height: 24px; 
+    z-index: 100; /* Keeps the button above the full-screen menu */
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  #nav-toggle span {
+    width: 100%; 
+    height: 2px; 
+    background: var(--ink); 
+    transition: all 0.4s ease; 
+    transform-origin: center;
+  }
+  
+  /* The Cross (X) State */
+  #nav-toggle.open span:nth-child(1) { 
+    transform: translateY(11px) rotate(45deg); 
+    background: var(--magenta); /* Adds a pop of color to the X */
+  }
+  #nav-toggle.open span:nth-child(2) { 
+    opacity: 0; 
+  }
+  #nav-toggle.open span:nth-child(3) { 
+    transform: translateY(-11px) rotate(-45deg); 
+    background: var(--cyan); 
+  }
+}
+
+/* =========================================
+   GLOBAL 3D HOVER EFFECT (TILT & DEPTH)
+========================================= */
+/* Target all the major cards on the website */
+.hero-glass-card, 
+.about-glass-card, 
+.modern-card, 
+.day-card, 
+.committee-card, 
+.reg-ticket, 
+.detail-container {
+  transform-style: preserve-3d;
+  will-change: transform;
+  /* Smooth reset when the mouse leaves */
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.6s ease, border-color 0.6s ease;
+}
+
+/* Make inner content "float" above the glass when hovered */
+.hero-glass-card > *, 
+.about-glass-card > *, 
+.modern-card .mc-content,
+.modern-card .mc-actions,
+.modern-card .mc-image-wrap,
+.day-card > *, 
+.committee-card > *, 
+.reg-ticket > * {
+  transform: translateZ(30px);
+  transition: transform 0.4s ease-out;
+}
+
+/* Slightly lift the cards on mobile where mouse hover isn't possible */
+@media (max-width: 768px) {
+  .modern-card:active, .day-card:active, .committee-card:active {
+    transform: perspective(1000px) scale3d(1.02, 1.02, 1.02) !important;
+  }
+}
+
+/* =========================================
+   3D OVERFLOW FIXES
+======================================== */
+/* This stops the browser from flattening the 3D effect */
+.modern-card, .day-card, .committee-card, .hero-glass-card, .about-glass-card {
+  overflow: visible !important;
+}
+
+/* Because we removed overflow:hidden, we must manually round the top corners of the event images */
+.mc-image-wrap {
+  border-radius: 24px 24px 0 0 !important;
+}
+
+/* Ensure the glowing border matches the rounded corners */
+.modern-card::before {
+  border-radius: 24px 24px 0 0;
+}
+
+/* =========================================
+   PREMIUM iOS-STYLE DARK GLASSMORPHISM (HIGH TRANSPARENCY)
+========================================= */
+.modern-card,
+.carousel-controls,
+.about-glass-card,
+.hero-glass-card,
+.day-card,
+.reg-ticket,
+.detail-container {
+  /* 1. Lowered opacity from 0.35 to 0.15 for a much clearer glass look */
+  background: rgba(25, 25, 30, 0.15) !important; 
+  
+  /* 2. Reduced blur from 28px to 20px so background video details show through better */
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  
+  /* 3. Standard subtle border */
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  
+  /* 4. iOS signature light reflection on top and left edges */
+  border-top: 1px solid rgba(255, 255, 255, 0.22) !important; 
+  border-left: 1px solid rgba(255, 255, 255, 0.15) !important; 
+  
+  /* 5. Soft, wide shadow to lift it off the background */
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Optional: Make the carousel controls a bit pill-shaped and tighter for iOS feel */
+.carousel-controls {
+  border-radius: 50px !important;
+  padding: 12px 28px !important;
+}
+
+/* =========================================
+   WEBGL 3D BACKGROUND CANVAS
+========================================= */
+#webgl-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* Keeps it behind all your glass UI */
+  pointer-events: none; /* Allows users to click buttons through it */
+}
+
+/* Optional: If you still have the background video running, 
+   we can dim it slightly so the 3D neon particles pop more */
+.bg-video {
+  opacity: 0.3 !important; 
+}
+
+/* =========================================
+   CYBERPUNK GLITCH HOVER EFFECT
+========================================= */
+.glitch-hover {
+  position: relative;
+  display: inline-block;
+  cursor: crosshair; /* Changes the mouse pointer for a hacker vibe */
+}
+
+/* Create two invisible duplicate layers of the text */
+.glitch-hover::before,
+.glitch-hover::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The Cyan Offset Layer */
+.glitch-hover::before {
+  color: #4deeea;
+  z-index: -1;
+}
+
+/* The Magenta Offset Layer */
+.glitch-hover::after {
+  color: #ff2b6d;
+  z-index: -2;
+}
+
+/* Trigger the chaotic animation only on hover */
+.glitch-hover:hover::before {
+  opacity: 1;
+  animation: glitch-anim-1 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+
+.glitch-hover:hover::after {
+  opacity: 1;
+  animation: glitch-anim-2 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite reverse;
+}
+
+/* Mathematics for the slicing and shaking */
+@keyframes glitch-anim-1 {
+  0% { clip-path: inset(20% 0 80% 0); transform: translate(-3px, 1px); }
+  20% { clip-path: inset(60% 0 10% 0); transform: translate(3px, -1px); }
+  40% { clip-path: inset(40% 0 50% 0); transform: translate(-3px, 2px); }
+  60% { clip-path: inset(80% 0 5% 0); transform: translate(3px, -2px); }
+  80% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, 1px); }
+  100% { clip-path: inset(30% 0 40% 0); transform: translate(2px, -1px); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { clip-path: inset(10% 0 60% 0); transform: translate(3px, -1px); }
+  20% { clip-path: inset(30% 0 20% 0); transform: translate(-3px, 2px); }
+  40% { clip-path: inset(70% 0 10% 0); transform: translate(3px, -2px); }
+  60% { clip-path: inset(20% 0 50% 0); transform: translate(-3px, 1px); }
+  80% { clip-path: inset(50% 0 30% 0); transform: translate(2px, -1px); }
+  100% { clip-path: inset(5% 0 80% 0); transform: translate(-2px, 2px); }
+}
+
+/* =========================================
+   1. HOLOGRAPHIC FOIL TICKET (GYROSCOPE)
+========================================= */
+.reg-ticket, #user-profile-section {
+  position: relative;
+  overflow: hidden; /* Keeps the foil contained inside the glass card */
+}
+
+/* The holographic gradient layer */
+.holo-glare {
+  position: absolute;
+  top: -50%; 
+  left: -50%; 
+  width: 200%; 
+  height: 200%;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(78, 238, 234, 0.6) 35%,   /* Cyan foil reflection */
+    rgba(255, 255, 255, 0.8) 45%,  /* Bright white glare */
+    rgba(255, 43, 109, 0.6) 55%,   /* Magenta foil reflection */
+    transparent 80%
+  );
+  mix-blend-mode: color-dodge; /* Blends the foil into the dark glass */
+  pointer-events: none;
+  z-index: 10;
+  
+  /* These variables will be updated by the phone's gyroscope */
+  transform: translate(var(--tx, 0%), var(--ty, 0%));
+  transition: transform 0.1s ease-out;
+}
+
+/* =========================================
+   2. RETRO CRT TV PAGE TRANSITIONS
+========================================= */
+#crt-transition-layer {
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100vw; height: 100vh; 
+  z-index: 999999;
+  pointer-events: none;
+  background: transparent;
+  transform-origin: center center;
+  opacity: 0;
+}
+
+/* When the page loads (TV turns ON) */
+.crt-on {
+  animation: crt-turn-on 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes crt-turn-on {
+  0% { transform: scale(0, 0.005); background: #fff; opacity: 1; }
+  30% { transform: scale(1, 0.005); background: #fff; opacity: 1; }
+  60% { transform: scale(1, 1); background: #030105; opacity: 1; }
+  100% { transform: scale(1, 1); background: transparent; opacity: 0; }
+}
+
+/* When a link is clicked (TV turns OFF) */
+.crt-off {
+  pointer-events: all; /* Blocks clicks while turning off */
+  animation: crt-turn-off 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes crt-turn-off {
+  0% { transform: scale(1, 1); background: transparent; opacity: 0; }
+  30% { transform: scale(1, 1); background: #030105; opacity: 1; }
+  70% { transform: scale(1, 0.005); background: #fff; opacity: 1; }
+  100% { transform: scale(0, 0.005); background: #fff; opacity: 1; }
+}
+
+/* =========================================
+   ULTRA-PREMIUM METAL GAMING ID CARD
+========================================= */
+
+/* 1. Base Dark Metal Glass & Shadows */
+#user-profile-section, .reg-ticket {
+  background: linear-gradient(135deg, rgba(20, 20, 25, 0.75) 0%, rgba(10, 10, 15, 0.95) 100%) !important;
+  backdrop-filter: blur(25px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(25px) saturate(150%) !important;
+  box-shadow: 
+    inset 0 0 40px rgba(78, 238, 234, 0.08), /* Inner neon glow */
+    0 25px 60px rgba(0, 0, 0, 0.8), /* Deep heavy drop shadow */
+    0 0 20px rgba(78, 238, 234, 0.15) !important; /* Outer cyan aura */
+  border: none !important; /* We will use a custom metallic border below */
+  border-radius: 20px !important;
+  overflow: hidden; /* Keeps the foil and texture inside */
+}
+
+/* 2. The Metallic Beveled Edge (Using a gradient mask) */
+#user-profile-section::before, .reg-ticket::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 20px;
+  padding: 2px; /* Thickness of the metal frame */
+  background: linear-gradient(135deg, var(--cyan), rgba(255,255,255,0.1) 30%, rgba(255,255,255,0.05) 70%, var(--magenta));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* 3. The Physical "Gaming" Micro-Texture (Carbon Dot Grid) */
+#user-profile-section::after, .reg-ticket::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 6px 6px; /* Space between the dots */
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1; /* Keeps it under the text */
+  border-radius: 20px;
+}
+
+/* 4. Upgrade the Holographic Foil to Prismatic / Rare Shiny */
+.holo-glare {
+  background: linear-gradient(
+    115deg,
+    transparent 15%,
+    rgba(78, 238, 234, 0.7) 25%,   /* Cyan flare */
+    rgba(255, 255, 255, 0.9) 35%,  /* Pure white light beam */
+    rgba(255, 215, 0, 0.5) 45%,    /* Rare Gold metallic tint */
+    rgba(255, 43, 109, 0.7) 55%,   /* Magenta flare */
+    transparent 70%
+  ) !important;
+  mix-blend-mode: color-dodge !important;
+  filter: brightness(1.3) contrast(1.4); /* Makes the metal shine intensely */
+  z-index: 10; /* Keeps the glare on top of the texture */
+}
+
+/* =========================================
+   CYBERPUNK E-SPORTS PLAYER CARD
+========================================= */
+.cyber-player-card {
+  --bg-dark: #121215;
+  --bg-darker: #09090b;
+  width: 320px;
+  height: 480px;
+  background: var(--bg-dark);
+  border: 4px solid var(--bg-darker);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  font-family: 'Space Mono', monospace;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+  overflow: hidden; /* Keeps the holo-glare contained if you use it */
+  margin: 0 auto;
+}
+
+/* 1. Top Notch */
+.cpc-top-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+}
+
+.cpc-notch {
+  width: 100px;
+  height: 18px;
+  background: var(--bg-darker);
+  /* Creates the angled trapezoid cut */
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 15% 100%); 
+  display: flex;
+  justify-content: center;
+}
+
+.cpc-notch::after {
+  content: '';
+  width: 40px;
+  height: 4px;
+  background: var(--accent);
+  margin-top: 4px;
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+}
+
+/* 2. Checkered Display Area */
+.cpc-display {
+  height: 260px;
+  /* Mathematically creates the transparent grid look from the image */
+  background: repeating-conic-gradient(#1a1a20 0% 25%, #121215 0% 50%) 50% / 12px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* 3. Center Emblem */
+.cpc-emblem {
+  position: absolute;
+  top: 260px; /* Aligned exactly on the split between top and bottom */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 68px;
+  height: 68px;
+  background: var(--bg-dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.cpc-emblem-inner {
+  width: 50px;
+  height: 50px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The inner solid circle of the badge */
+.cpc-emblem-inner::after {
+  content: '';
+  width: 24px;
+  height: 24px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 4px var(--bg-dark); /* Creates the ringed look */
+}
+
+/* 4. Bottom Solid HUD */
+.cpc-hud {
+  flex: 1;
+  background: var(--bg-darker);
+  position: relative;
+  text-align: center;
+  padding-top: 55px;
+  color: #fff;
+  /* Slices off the top left and top right corners of the black panel */
+  clip-path: polygon(0 20px, 20px 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+  margin-top: -15px; /* Pulls the black panel up so the emblem overlaps perfectly */
+}
+
+/* Typography */
+.cpc-name {
+  font-family: 'Orbitron', sans-serif;
+  color: var(--accent);
+  letter-spacing: 3px;
+  font-size: 22px;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+}
+
+.cpc-desc {
+  font-size: 10px;
+  color: #777;
+  max-width: 80%;
+  margin: 0 auto;
+  line-height: 1.6;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* 5. Left & Right Side HUD Details */
+.cpc-hud-left {
+  position: absolute;
+  left: 15px;
+  bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cpc-hud-left span {
+  width: 18px;
+  height: 3px;
+  background: var(--accent);
+}
+
+.cpc-box-icon {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--accent);
+  margin-top: 5px;
+  position: relative;
+}
+
+/* Cross line inside the little square box */
+.cpc-box-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 1px; right: 1px;
+  border-top: 1px solid var(--accent);
+  transform: translateY(-50%);
+}
+
+.cpc-hud-right {
+  position: absolute;
+  right: 15px;
+  bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.cpc-hud-right span {
+  width: 24px;
+  height: 3px;
+  background: var(--accent);
+}
+
+/* Make every other line shorter on the right side */
+.cpc-hud-right span:nth-child(even) {
+  width: 14px; 
+}
+
+/* 6. Bottom Bracket Accent */
+.cpc-bottom-bracket {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid var(--accent);
+  padding: 4px 25px;
+  display: flex;
+  gap: 8px;
+}
+
+/* The three diamonds at the bottom */
+.cpc-bottom-bracket span {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  transform: rotate(45deg); 
+}
+
+/* =========================================
+   MOBILE 3D SCROLL HARDWARE ACCELERATION
+========================================= */
+/* Create the 3D camera depth for the scroll effect */
+.events-section, .schedule-section {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+/* Prepare the GPU for smooth 60FPS animation */
+.modern-card, .day-card {
+  will-change: transform, opacity;
+  transform-origin: center bottom; /* Makes them swing from the bottom edge */
+}
+
+/* =========================================
+   UNIVERSAL GLASSMORPHISM UTILITY
+========================================= */
+.glass-panel {
+  /* 1. Deep, dark translucent base */
+  background: rgba(15, 15, 20, 0.45) !important; 
+  
+  /* 2. The Frosted Glass Blur Effect */
+  backdrop-filter: blur(18px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(150%) !important; /* Critical for Safari/iOS */
+  
+  /* 3. The Physical Glass Edge */
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15) !important; /* Slightly brighter on top to catch fake light */
+  
+  /* 4. Drop Shadow to separate it from the background */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6) !important;
+  
+  /* 5. Smooth Corners */
+  border-radius: 16px !important;
+  
+  /* Keeps child elements (like images) clipped inside the glass */
+  overflow: hidden; 
+}
+
+/* Optional: Subtle neon hover glow for interactive glass elements */
+.glass-panel.interactive:hover {
+  border-color: rgba(78, 238, 234, 0.4) !important; /* Cyan glow */
+  box-shadow: 0 8px 32px 0 rgba(78, 238, 234, 0.15) !important;
+  transform: translateY(-3px);
+  transition: all 0.3s ease;
+}
+
+/* Base container styling */
+.payment-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  font-family: 'Inter', sans-serif; /* Recommended clean font */
+  color: #ffffff;
+}
+
+/* 1. Glassmorphic Card Styling */
+.glass-card {
+  background: rgba(20, 20, 30, 0.6); /* Semi-transparent dark background */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-card h2 {
+  margin-top: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 1.5rem;
+}
+
+/* 2. QR Code Formatting */
+.qr-wrapper {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 16px;
+  margin: 0 auto 2rem auto;
+  width: fit-content;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.qr-code {
+  width: 220px;
+  height: 220px;
+  display: block;
+  border-radius: 8px;
+}
+
+/* 3. Upload Section & Custom File Input */
+.upload-section {
+  text-align: left;
+}
+
+.upload-section > label {
+  display: block;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  margin-bottom: 0.8rem;
+  font-family: monospace; /* Matches the vibe in your image */
+}
+
+.required {
+  color: #ec4899; /* Neon pink asterisk */
+}
+
+.custom-file-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.custom-file-upload:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.custom-file-upload input[type="file"] {
+  display: none; /* Hides the ugly default button */
+}
+
+.file-btn {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.file-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.file-name {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+
+/* 4. Neon Pill Button */
+.confirm-btn {
+  background: linear-gradient(135deg, #d946ef, #a855f7);
+  color: #ffffff;
+  border: none;
+  padding: 18px 36px;
+  border-radius: 50px; /* Perfect pill shape */
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(217, 70, 239, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.confirm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(217, 70, 239, 0.7);
+}
+
+/* 1. Fix the Glass Card Width & Padding */
+.glass-card {
+  background: rgba(20, 20, 30, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  
+  /* CRITICAL MOBILE FIXES BELOW */
+  box-sizing: border-box; 
+  width: 100%;
+  max-width: 320px;
+  padding: 2rem 1.5rem; /* Slightly reduced side padding */
+  margin: 0 auto; /* Forces it to stay centered */
+  text-align: center;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+.glass-card h2 {
+  margin-top: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  width: 100%; /* Prevents the text from squishing to the left */
+}
+
+/* 2. Make the QR Wrapper Fluid */
+.qr-wrapper {
+  box-sizing: border-box;
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 16px;
+  margin: 0 auto 2rem auto;
+  
+  /* CRITICAL MOBILE FIXES BELOW */
+  width: 100%; 
+  max-width: 220px; /* Controls the maximum size of the white box */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 3. Make the Image Responsive */
+.qr-code {
+  width: 100%; /* Fills the wrapper dynamically */
+  height: auto; /* Maintains perfect aspect ratio */
+  display: block;
+  border-radius: 8px;
+}
+
+
+/* 1. Fix the Glass Card Background Stacking */
+.glass-card {
+  background: transparent; /* Removes the solid black double-layer */
+  backdrop-filter: none; /* The parent form is already blurring the background */
+  -webkit-backdrop-filter: none;
+  
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Keeps the crisp physical edge */
+  border-radius: 24px;
+  
+  box-sizing: border-box; 
+  width: 100%;
+  max-width: 320px;
+  padding: 2rem 1.5rem;
+  margin: 0 auto;
+  text-align: center;
+  
+  /* Swap the heavy outer shadow for a faint inner glow to match the glass */
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02); 
+}
+
+/* =========================================
+   FIX: RESPONSIVE SCAN TO PAY (NO OVERFLOW)
+========================================= */
+.payment-container {
+  width: 100% !important;
+  padding: 20px 0 !important;
+}
+
+.payment-container .glass-card {
+  width: 100% !important;
+  max-width: 350px !important; /* Wide enough, but respects mobile bounds */
+  padding: 30px 20px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important; /* Stops padding from breaking the width */
+}
+
+/* Forces the QR code to shrink dynamically if the screen gets too small */
+.payment-container .qr-code {
+  width: 100% !important;
+  max-width: 200px !important; /* Will never get bigger than 200px */
+  height: auto !important; /* Keeps the perfect square aspect ratio */
+  aspect-ratio: 1 / 1 !important; 
+  object-fit: cover !important;
+  margin: 0 auto 20px auto !important;
+  border-radius: 12px !important;
+  border: 3px solid rgba(78, 238, 234, 0.4) !important;
+  display: block !important;
+}
+
+/* Flexbox ensures the text and button stay perfectly centered */
+.upload-section {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.upload-section > label {
+  font-size: 0.95rem !important;
+  color: #fff !important;
+  margin-bottom: 15px !important;
+  text-align: center !important;
+}
+
+.custom-file-upload {
+  width: 100% !important;
+  max-width: 260px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 8px 12px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  box-sizing: border-box !important;
+}
+
+/* Prevents long file names from squishing the "Choose File" button */
+.custom-file-upload .file-name {
+  max-width: 90px !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+/* =========================================
+   FIX 1: ALIGN ALL FORM INPUTS PERFECTLY
+========================================= */
+.field {
+  width: 100% !important;
+  align-items: flex-start !important; /* Forces the label and box to the left edge */
+}
+
+.field input, .field textarea {
+  width: 100% !important; /* Forces the box to take up the full screen width */
+  box-sizing: border-box !important;
+  text-align: left !important; /* Stops the placeholder text from centering */
+  padding-left: 16px !important; 
+  margin: 0 !important;
+}
+
+.field span {
+  text-align: left !important;
+  width: 100% !important;
+  margin-left: 2px !important; /* Perfect visual alignment with the box below it */
+}
+
+/* =========================================
+   FIX 2: UNBLOCK & SHOW THE MENU BUTTON
+========================================= */
+.nav-inner {
+  position: relative !important;
+}
+
+/* Stop the logo from blocking the menu button on desktop */
+.nav-logo {
+  max-width: 70%;
+  z-index: 100;
+  position: relative;
+}
+
+@media (max-width: 900px) {
+  .nav-logo img {
+    height: 60px !important; 
+    width: auto !important;
+  }
+  
+  .register-main {
+    padding-top: 110px !important; 
+  }
+}
+
+/* =========================================
+   CLEAN MOBILE MENU - NEW DESIGN
+========================================= */
+
+/* Desktop: Hide hamburger, show links horizontally */
+@media (min-width: 901px) {
+  #nav-toggle {
+    display: none !important;
+  }
+  
+  .nav-links {
+    display: flex !important;
+    flex-direction: row !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    background: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  .nav-backdrop {
+    display: none !important;
+  }
+}
+
+/* Mobile: Hamburger visible, menu slides from right */
+@media (max-width: 900px) {
+  .nav-inner {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #nav-toggle {
+    display: flex !important;
+    position: relative;
+    z-index: 95;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  #nav-toggle span {
+    display: block;
+    width: 100%;
+    height: 2.5px;
+    background: var(--cyan);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 2px;
+  }
+
+  #nav-toggle.open span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+    background: var(--magenta);
+  }
+
+  #nav-toggle.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  #nav-toggle.open span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+    background: var(--magenta);
+  }
+
+ /* Sidebar menu sliding from the top */
+  .nav-links {
+    position: fixed !important;
+    top: 62px;
+    left: 0;
+    right: 0;
+    height: calc(100vh - 62px);
+    width: 100%;
+    max-width: none;
+    background: rgba(6, 3, 8, 0.98) !important;
+    backdrop-filter: blur(10px);
+    flex-direction: column;
+    align-items: center; 
+    padding: 32px 24px;
+    gap: 0;
+    transform: translateY(-120%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 1px solid var(--line);
+    border-left: none;
+    z-index: 89;
+    overflow-y: auto;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav-links.open {
+    transform: translateY(0) !important;
+  }
+
+  .nav-links a {
+    width: 100%;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: block;
+    color: var(--ink-dim);
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    transition: color 0.3s ease;
+  }
+
+  .nav-links a:hover {
+    color: var(--cyan);
+  }
+
+  .nav-links .nav-register {
+    width: 100%;
+    text-align: center;
+    margin-top: 32px;
+    padding: 14px 20px !important;
+    border: none;
+    letter-spacing: 1.5px;
+  }
 }

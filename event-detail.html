@@ -9,9 +9,9 @@
 <body class="register-body">
 
   <!-- ================= PERMANENT VIDEO BACKGROUND ================= -->
-  <video autoplay loop muted playsinline class="bg-video-loop">
-    <source src="images/cyberpunk-bg.mp4" type="video/mp4">
-  </video>
+  <video autoplay loop muted playsinline preload="auto" poster="images/cyberpunk-bg-poster.jpg" class="bg-video-loop" style="background-color: #050505;">
+  <source src="images/cyberpunk-bg.mp4" type="video/mp4">
+</video>
 
   <nav id="site-nav" class="scrolled">
     <div class="nav-inner">
@@ -27,7 +27,7 @@
   <main class="register-main">
     <div class="bg-circuit"></div>
 
-    <div id="event-detail-content" class="reveal in-view">
+   <div id="event-detail-content" class="reveal in-view detail-container">
       <span class="eyebrow" id="det-day">// DAY X</span>
       <h1 class="section-title" id="det-title">LOADING...</h1>
       <p class="lede" id="det-tagline" style="color: var(--cyan); margin-bottom: 20px;"></p>

@@ -53,8 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const themeColor = accentColors[index % accentColors.length];
       const imagePath = `images/${ev.key}.jpg`; 
       
-      html += `
-        <div class="modern-card reveal" style="--accent: ${themeColor};">
+     html += `
+  <div class="modern-card in-view" style="--accent: ${themeColor}; opacity: 1 !important; transform: none !important;">
           <div class="mc-image-wrap">
             <img src="${imagePath}" alt="${ev.title}" onerror="this.onerror=null; this.src='https://placehold.co/400x300/1a1a1a/fff?text=TBA'">
             <div class="mc-badges">
@@ -82,6 +82,29 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     });
     eventsGrid.innerHTML = html;
+
+    // ==========================================
+  // SCROLL RIGHT ARROW LOGIC
+  // ==========================================
+  const slideBtn = document.getElementById('slide-right-btn');
+
+  if (eventsGrid && slideBtn) {
+    // 1. Click to scroll horizontally
+    slideBtn.addEventListener('click', () => {
+      // Scrolls right by the width of one card (~320px) + gap
+      eventsGrid.scrollBy({ left: 340, behavior: 'smooth' });
+    });
+
+    // 2. Hide button when scrolled to the end
+    eventsGrid.addEventListener('scroll', () => {
+      // Check if the scroll position + visible width equals the total scrollable width
+      if (eventsGrid.scrollLeft + eventsGrid.clientWidth >= eventsGrid.scrollWidth - 20) {
+        slideBtn.classList.add('hidden'); // Hide arrow
+      } else {
+        slideBtn.classList.remove('hidden'); // Show arrow
+      }
+    });
+  }
 
     // ==========================================
     // NEW: MOBILE AUTO-CENTER GLOW TRACKER
@@ -149,13 +172,61 @@ document.addEventListener('DOMContentLoaded', () => {
   }, { threshold: 0.4 });
   sectionsForNav.forEach(sec => navObserver.observe(sec));
 
-  // 6. Mobile Nav Toggle (Untouched)
+  // 6. Mobile Nav Toggle - Simple and Bulletproof
   const navToggle = document.getElementById('nav-toggle');
   const navLinksWrap = document.getElementById('nav-links');
-  if (navToggle && navLinksWrap) {
-    navToggle.addEventListener('click', () => navLinksWrap.classList.toggle('open'));
-    navLinksWrap.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinksWrap.classList.remove('open')));
+  
+  // Create backdrop overlay if it doesn't exist
+  let navBackdrop = document.querySelector('.nav-backdrop');
+  if (!navBackdrop) {
+    navBackdrop = document.createElement('div');
+    navBackdrop.className = 'nav-backdrop';
+    document.body.appendChild(navBackdrop);
   }
+  
+  function closeMenu() {
+    if (navLinksWrap) navLinksWrap.classList.remove('open');
+    if (navToggle) navToggle.classList.remove('open');
+    if (navBackdrop) navBackdrop.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+  
+  function openMenu() {
+    if (navLinksWrap) navLinksWrap.classList.add('open');
+    if (navToggle) navToggle.classList.add('open');
+    if (navBackdrop) navBackdrop.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  if (navToggle && navLinksWrap) {
+    // Toggle menu on button click
+    navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (navLinksWrap.classList.contains('open')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+    
+    // Close menu when backdrop is clicked
+    if (navBackdrop) {
+      navBackdrop.addEventListener('click', closeMenu);
+    }
+    
+    // Close menu when a link is clicked
+    navLinksWrap.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+    
+    // Close menu with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeMenu();
+      }
+    });
+  }
+  
 
   // 7. Smooth Scroll Links (Untouched)
   document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -292,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (refreshStats) refreshStats.addEventListener('click', fetchStats);
 
-  // -- 4. SCANNER LOGIC --
+ // -- 4. SCANNER LOGIC --
   function initScanner() {
     const qrReader = document.getElementById('qr-reader');
     const qrResult = document.getElementById('qr-result');
@@ -301,6 +372,28 @@ document.addEventListener('DOMContentLoaded', () => {
     qrResult.classList.add('hidden');
     qrReader.classList.remove('hidden');
     
+    // SAFE RESTART: Wait for the camera to shut off before making a new one
+    if (html5QrcodeScanner) {
+      html5QrcodeScanner.clear().then(() => {
+        startNewScanner();
+      }).catch(err => {
+        console.error("Camera clear error: ", err);
+        startNewScanner();
+      });
+    } else {
+      startNewScanner();
+    }
+  }
+
+  function startNewScanner() {
+    // ULTRA-SAFE SETTINGS: Drop the box size to 250 to guarantee it fits every screen
+    html5QrcodeScanner = new Html5QrcodeScanner(
+      "qr-reader", 
+      { fps: 10, qrbox: 250 }, 
+      false
+    );
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+  
     // 1. PREVENT DOUBLE-OPEN CRASH: Wipe the old scanner if it exists before making a new one
     if (html5QrcodeScanner) {
       try {
@@ -340,71 +433,370 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('res-events').textContent = eventsArray.join(", ") || "None";
       document.getElementById('res-fee').textContent = data.fee || "0";
 
-      // --- GENERATE DYNAMIC CHECK-IN BUTTONS ---
+     // --- GENERATE DYNAMIC CHECK-IN BUTTONS ---
       const checkinContainer = document.getElementById('checkin-container');
-      checkinContainer.innerHTML = '<h5 style="color:var(--cyan); margin-bottom:5px; font-family:\'Orbitron\', sans-serif;">EVENT CHECK-IN</h5>';
       
-      eventsArray.forEach(ev => {
-        if (!ev) return;
+      // Show a loading message while we ask Google Sheets for the live status
+      checkinContainer.innerHTML = '<h5 style="color:var(--cyan); margin-bottom:5px; font-family:\'Orbitron\', sans-serif;">EVENT CHECK-IN</h5><p style="color:#a0a0a0; font-size:12px; margin-bottom: 10px;">Checking live status...</p>';
+      
+      // Fetch live status from backend
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        redirect: 'follow', 
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'get_status',
+          name: data.name,
+          phone: data.phone
+        })
+      })
+      .then(res => res.json())
+      .then(resData => {
+        checkinContainer.innerHTML = '<h5 style="color:var(--cyan); margin-bottom:10px; font-family:\'Orbitron\', sans-serif;">EVENT CHECK-IN</h5>';
         
-        const btn = document.createElement('button');
-        btn.className = 'btn-detail';
-        btn.style.width = '100%';
-        btn.style.justifyContent = 'space-between';
-        btn.innerHTML = `<span>${ev}</span> <span>[ CHECK IN ]</span>`;
-        
-        btn.addEventListener('click', () => {
-          // Visual loading state
-          btn.innerHTML = `<span>${ev}</span> <span>[ SYNCING... ]</span>`;
-          btn.style.opacity = '0.6';
-          btn.disabled = true;
+        const liveStatus = resData.status || "";
+
+        eventsArray.forEach(ev => {
+          if (!ev) return;
           
-          fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            redirect: 'follow', 
-            headers: {
-              'Content-Type': 'text/plain;charset=utf-8', 
-            },
-            body: JSON.stringify({
-              action: 'checkin',
-              name: data.name, // <--- ADD THIS LINE
-              phone: data.phone, 
-              event: ev
-            })
-          })
-          .then(res => res.json())
-          .then(resData => {
-            if (resData.result === 'success') {
-              btn.innerHTML = `<span>${ev}</span> <span>[ VERIFIED ✅ ]</span>`;
-              btn.style.borderColor = '#4deeea';
-              btn.style.color = '#4deeea';
-              btn.style.opacity = '1';
-            } else {
-              btn.innerHTML = `<span>${ev}</span> <span>[ ERROR ]</span>`;
-              btn.style.borderColor = '#ff2b6d';
-              btn.style.color = '#ff2b6d';
-              btn.disabled = false;
-              alert(resData.error);
-            }
-          })
-          .catch(err => {
-            btn.innerHTML = `<span>${ev}</span> <span>[ NETWORK ERROR ]</span>`;
-            btn.disabled = false;
-          });
+          // Check if this specific event is inside the liveStatus string
+          const isAlreadyCheckedIn = liveStatus.includes(ev);
+          
+          const btn = document.createElement('button');
+          btn.className = 'btn-detail';
+          btn.style.width = '100%';
+          btn.style.justifyContent = 'space-between';
+          
+          if (isAlreadyCheckedIn) {
+            // Already checked in previously! Lock it.
+            btn.innerHTML = `<span>${ev}</span> <span>[ VERIFIED ✅ ]</span>`;
+            btn.style.borderColor = '#4deeea';
+            btn.style.color = '#4deeea';
+            btn.disabled = true; 
+          } else {
+            // Not checked in yet. Show normal button.
+            btn.innerHTML = `<span>${ev}</span> <span>[ CHECK IN ]</span>`;
+            btn.addEventListener('click', () => {
+              
+              btn.innerHTML = `<span>${ev}</span> <span>[ SYNCING... ]</span>`;
+              btn.style.opacity = '0.6';
+              btn.disabled = true;
+              
+              fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                redirect: 'follow', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'checkin', name: data.name, phone: data.phone, event: ev })
+              })
+              .then(res => res.json())
+              .then(checkinData => {
+                if (checkinData.result === 'success') {
+                  btn.innerHTML = `<span>${ev}</span> <span>[ VERIFIED ✅ ]</span>`;
+                  btn.style.borderColor = '#4deeea';
+                  btn.style.color = '#4deeea';
+                  btn.style.opacity = '1';
+                } else {
+                  btn.innerHTML = `<span>${ev}</span> <span>[ ERROR ]</span>`;
+                  btn.style.borderColor = '#ff2b6d';
+                  btn.style.color = '#ff2b6d';
+                  btn.disabled = false;
+                  alert(checkinData.error);
+                }
+              })
+              .catch(err => {
+                btn.innerHTML = `<span>${ev}</span> <span>[ NETWORK ERROR ]</span>`;
+                btn.disabled = false;
+              });
+            });
+          }
+          
+          checkinContainer.appendChild(btn);
         });
-        
-        checkinContainer.appendChild(btn);
+      })
+      .catch(err => {
+        checkinContainer.innerHTML += '<p style="color:#ff2b6d; font-size:12px;">Failed to connect to server. Check internet & try scanning again.</p>';
       });
-      
-    } catch (e) {
-      console.error(e);
-      alert("Scanner read the code, but the data is broken!");
+    } catch (err) {
+      console.log("Error scanning QR:", err);
     }
   }
-  function onScanFailure(error) { /* Background scanning process */ }
 
-  const scanAgainBtn = document.getElementById('scan-again');
-  if (scanAgainBtn) {
-    scanAgainBtn.addEventListener('click', () => { initScanner(); });
+  function onScanFailure(error) {
+    console.warn("QR scan failed:", error);
   }
-})
+});
+
+/* =========================================================
+   GLOBAL 3D TILT HOVER EFFECT (DYNAMIC)
+========================================================= */
+document.addEventListener('mouseover', (e) => {
+  // 1. Check if the mouse is hovering over any of our target cards
+  const card = e.target.closest('.hero-glass-card, .about-glass-card, .modern-card, .day-card, .committee-card, .reg-ticket, .detail-container');
+  
+  // If we aren't on a card, or if the 3D effect is already active on it, do nothing
+  if (!card || card.dataset.tiltActive) return;
+  
+  // Mark the card as active
+  card.dataset.tiltActive = "true";
+
+  // 2. Mouse Move: Calculate the exact 3D tilt
+  card.addEventListener('mousemove', (moveEvent) => {
+    const rect = card.getBoundingClientRect();
+    const x = moveEvent.clientX - rect.left;
+    const y = moveEvent.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // Tilt intensity (12 degrees max)
+    const rotateX = ((y - centerY) / centerY) * -12; 
+    const rotateY = ((x - centerX) / centerX) * 12;
+
+    card.style.transition = 'none';
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+  });
+
+  // 3. Mouse Leave: Smoothly snap the card back to flat
+  card.addEventListener('mouseleave', () => {
+    card.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    
+    // Reset the state so it can be triggered again perfectly
+    setTimeout(() => { card.dataset.tiltActive = "false"; }, 600);
+  });
+});
+
+/* =========================================================
+   3D WEBGL PARTICLE FIELD & SCROLL-FLY CAMERA
+========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  const canvas = document.querySelector('#webgl-canvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+
+  // 1. Setup Scene, Camera, and Renderer
+  const scene = new THREE.Scene();
+  // Add a subtle dark fog to blend distant particles into the shadows
+  scene.fog = new THREE.FogExp2(0x0a050f, 0.015); 
+
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 10; // Starting position
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // 2. Generate Cyberpunk Neon Dust
+  const geometry = new THREE.BufferGeometry();
+  const particleCount = 3000;
+  const positions = new Float32Array(particleCount * 3);
+  const colors = new Float32Array(particleCount * 3);
+
+  const colorCyan = new THREE.Color('#4deeea');
+  const colorMagenta = new THREE.Color('#ff2b6d');
+
+  for(let i = 0; i < particleCount * 3; i += 3) {
+    // Spread particles across a wide 3D space
+    positions[i] = (Math.random() - 0.5) * 80;     // X axis (Left/Right)
+    positions[i+1] = (Math.random() - 0.5) * 80;   // Y axis (Up/Down)
+    positions[i+2] = (Math.random() - 0.5) * 100;  // Z axis (Depth)
+
+    // Randomly mix Cyan and Magenta for each particle
+    const mixedColor = colorCyan.clone().lerp(colorMagenta, Math.random());
+    colors[i] = mixedColor.r;
+    colors[i+1] = mixedColor.g;
+    colors[i+2] = mixedColor.b;
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  // Particle Material styling (Glowing effect using Additive Blending)
+  const material = new THREE.PointsMaterial({
+    size: 0.15,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.9,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+
+  const particles = new THREE.Points(geometry, material);
+  scene.add(particles);
+
+  // 3. Interactive Mouse/Touch & Ambient Animation Loop
+  let mouseX = 0;
+  let mouseY = 0;
+  let targetX = 0;
+  let targetY = 0;
+
+  // Track desktop mouse movement
+  window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX - window.innerWidth / 2);
+    mouseY = (e.clientY - window.innerHeight / 2);
+  });
+  
+  // Track mobile touch swiping
+  window.addEventListener('touchmove', (e) => {
+    mouseX = (e.touches[0].clientX - window.innerWidth / 2);
+    mouseY = (e.touches[0].clientY - window.innerHeight / 2);
+  }, { passive: true });
+
+  const clock = new THREE.Clock();
+  
+  function animate() {
+    const elapsedTime = clock.getElapsedTime();
+    
+    // Calculate the target positions based on where the user is pointing
+    targetX = mouseX * 0.0015;
+    targetY = mouseY * 0.0015;
+    
+    // Smoothly interpolate the particle rotation (creates the heavy, fluid 3D feel)
+    // We add +0.001 to the Y rotation so it keeps a slow, ambient spin even if they stop moving
+    particles.rotation.y += 0.05 * (targetX - particles.rotation.y) + 0.001; 
+    particles.rotation.x += 0.05 * (targetY - particles.rotation.x);
+    particles.rotation.z = elapsedTime * 0.01; // Keep the ambient depth spin
+    
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // 4. GSAP ScrollTrigger: Fly the camera forward as the user scrolls
+  gsap.registerPlugin(ScrollTrigger);
+  
+  gsap.to(camera.position, {
+    z: -40, // How far forward the camera flies into the screen
+    ease: "none",
+    scrollTrigger: {
+      trigger: "body",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 1.5 // Smooths out the scroll (1.5 seconds of momentum)
+    }
+  });
+
+  // 5. Handle Window Resizing smoothly
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+});
+
+/* =========================================================
+   MOBILE HARDWARE MAGIC & CRT TRANSITIONS
+========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  
+  // ---------------------------------------------------
+  // 1. CRT TV PAGE TRANSITIONS
+  // ---------------------------------------------------
+  // Inject the CRT layer into the DOM
+  const crtLayer = document.createElement('div');
+  crtLayer.id = 'crt-transition-layer';
+  document.body.appendChild(crtLayer);
+
+  // Play "Turn On" animation when the page first loads
+  setTimeout(() => {
+    crtLayer.classList.add('crt-on');
+  }, 50);
+
+  // Intercept all clicks on links to play the "Turn Off" animation
+  document.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetUrl = link.getAttribute('href');
+      
+      // Ignore empty links, anchor links (#), or links opening in a new tab
+      if (!targetUrl || targetUrl.startsWith('#') || link.getAttribute('target') === '_blank') return;
+
+      e.preventDefault(); // Stop the browser from instantly changing pages
+
+      // Play the CRT Turn Off animation
+      crtLayer.classList.remove('crt-on');
+      crtLayer.classList.add('crt-off');
+
+      // Wait exactly 450ms for the animation to finish, then actually change the page
+      setTimeout(() => {
+        window.location.href = targetUrl;
+      }, 450);
+    });
+  });
+
+
+  // ---------------------------------------------------
+  // 2. HOLOGRAPHIC FOIL (GYROSCOPE TILT)
+  // ---------------------------------------------------
+  // Target the registration ticket (adjust class/ID if necessary)
+  const ticket = document.querySelector('.reg-ticket') || document.querySelector('#user-profile-section');
+  
+  if (ticket) {
+    // Inject the holographic layer into the ticket
+    const holo = document.createElement('div');
+    holo.className = 'holo-glare';
+    ticket.appendChild(holo);
+
+    // MOBILE SENSOR: Connect the foil to the phone's physical gyroscope
+    window.addEventListener('deviceorientation', (e) => {
+      if (!e.beta || !e.gamma) return; // Ignore if on a device without a gyro
+      
+      // Calculate how far the phone is tilted
+      const tx = Math.max(-50, Math.min(50, e.gamma * 1.5)); // Left/Right tilt
+      const ty = Math.max(-50, Math.min(50, (e.beta - 45) * 1.5)); // Up/Down tilt (assuming phone is held at 45 degree angle)
+      
+      // Move the gradient foil
+      ticket.style.setProperty('--tx', `${tx}%`);
+      ticket.style.setProperty('--ty', `${ty}%`);
+    });
+
+    // DESKTOP FALLBACK: Connect the foil to the mouse pointer
+    ticket.addEventListener('mousemove', (e) => {
+      const rect = ticket.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
+      
+      ticket.style.setProperty('--tx', `${(x - 0.5) * 100}%`);
+      ticket.style.setProperty('--ty', `${(y - 0.5) * 100}%`);
+    });
+  }
+});
+
+/* =========================================================
+   HIGH-PERFORMANCE 3D MOBILE SCROLL
+========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  // Make sure GSAP and ScrollTrigger are available
+  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+  // Select all the cards we want to animate on scroll
+  const scrollCards = gsap.utils.toArray('.modern-card, .day-card, .about-glass-card');
+
+  scrollCards.forEach(card => {
+    gsap.fromTo(card, 
+      {
+        // STARTING STATE: Pushed back in Z-space, rotated back 45 degrees, and faded out
+        opacity: 0,
+        rotationX: -45,
+        z: -150,
+        scale: 0.85
+      },
+      {
+        // ENDING STATE: Flat, full size, fully visible
+        opacity: 1,
+        rotationX: 0,
+        z: 0,
+        scale: 1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: card,
+          // Animation starts when the top of the card hits 95% of the viewport (bottom of screen)
+          start: "top 95%", 
+          // Animation finishes when the top of the card hits 65% of the viewport (middle of screen)
+          end: "top 65%",   
+          // 'scrub: 1' means the animation smoothly catches up to the scrollbar over 1 second
+          scrub: 1,         
+          // Optional: Reverses the 3D effect if they scroll back up!
+          toggleActions: "play reverse play reverse" 
+        }
+      }
+    );
+  });
+});

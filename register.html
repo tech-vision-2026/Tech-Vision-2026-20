@@ -9,10 +9,11 @@
 <body class="register-body">
 
   <!-- ================= PERMANENT VIDEO BACKGROUND ================= -->
-  <video autoplay loop muted playsinline class="bg-video-loop">
-    <source src="images/cyberpunk-bg.mp4" type="video/mp4">
-  </video>
+<video autoplay loop muted playsinline preload="auto" poster="images/cyberpunk-bg-poster.jpg" class="bg-video-loop" style="background-color: #050505;">
+  <source src="images/cyberpunk-bg.mp4" type="video/mp4">
+</video>
 
+  <!-- ADDED: glass-panel class to Navbar -->
   <nav id="site-nav" class="scrolled">
     <div class="nav-inner">
      <a href="index.html" class="nav-logo" style="display: flex; align-items: center;">
@@ -44,12 +45,12 @@
       <!-- ==========================================
            PARTICIPANT ID CARD & QR CODE SECTION 
       =========================================== -->
-      <div id="user-profile-section" class="reg-ticket hidden" style="margin-bottom: 40px; text-align: center; border: 1px solid var(--cyan); box-shadow: 0 0 30px rgba(78, 238, 234, 0.1);">
+      <div id="user-profile-section" class="reg-ticket hidden glass-panel" style="margin-bottom: 40px; text-align: center; border: 1px solid var(--cyan); box-shadow: 0 0 30px rgba(78, 238, 234, 0.1);">
         <div class="ticket-glow"></div>
         
         <!-- ID Card Header -->
         <div style="border-bottom: 1px dashed var(--line); padding-bottom: 20px; margin-bottom: 20px;">
-          <h2 style="font-family: 'Orbitron', sans-serif; color: var(--cyan); margin: 0; font-size: 1.5rem; letter-spacing: 2px;">TECH VISION 2026-27</h2>
+          <h2 style="font-family: 'Orbitron', sans-serif; color: var(--cyan); margin: 0; font-size: 1.5rem; letter-spacing: 2px;">TECH VISION 2026</h2>
           <span style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--ink-dim); letter-spacing: 3px;">OFFICIAL PARTICIPANT ID</span>
         </div>
 
@@ -81,7 +82,7 @@
       <!-- ==========================================
            MAIN REGISTRATION FORM 
       =========================================== -->
-      <form id="reg-form" class="reg-form reveal in-view" novalidate>
+      <form id="reg-form" class="reg-form reveal in-view glass-panel" style="padding: 40px; border-radius: 16px;" novalidate>
 
         <div class="form-block">
           <h3 class="form-block-title">01 &middot; Your Details</h3>
@@ -105,12 +106,12 @@
             
             <label class="field">
               <span>Profile Picture (Upload) *</span>
-              <input type="file" name="profilepic" accept="image/*" required style="width: 100%; padding: 13px 16px; background: var(--glass); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; cursor: pointer;">
+              <input type="file" name="profilepic" accept="image/*" required style="width: 100%; padding: 13px 16px; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; cursor: pointer;">
             </label>
             
             <label class="field">
               <span>College ID / Fee Receipt (Upload) *</span>
-              <input type="file" name="idfile" accept="image/*,application/pdf" required style="width: 100%; padding: 13px 16px; background: var(--glass); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; cursor: pointer;">
+              <input type="file" name="idfile" accept="image/*,application/pdf" required style="width: 100%; padding: 13px 16px; background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; cursor: pointer;">
             </label>
           </div>
         </div>
@@ -143,22 +144,32 @@
           <div class="total-amount" id="total-amount">&#8377;0</div>
         </div>
 
-        <div class="payment-section" style="text-align: center; margin: 30px 0; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 16px; border: 1px solid var(--neon, #4deeea);">
-          <h3 style="color: #fff; margin-bottom: 15px; font-family: 'Orbitron', sans-serif;">Scan to Pay</h3>
-          
-          <img src="images/qr-code.jpg" alt="Payment QR Code" style="max-width: 200px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
-          
-          <div style="text-align: left;">
-            <label for="payment-proof" style="color: #a0a0a0; font-size: 0.9rem; margin-bottom: 8px; display: block;">Upload Payment Screenshot *</label>
-            <input type="file" id="payment-proof" accept="image/*" required style="width: 100%; padding: 10px; background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;">
+        <!-- ==========================================
+             UPGRADED PAYMENT UI 
+        =========================================== -->
+        <div class="payment-container">
+          <!-- Glassmorphic Card -->
+          <div class="glass-card">
+            <h2 style="color: #fff;">Scan to Pay</h2>
+            
+            <img src="images/qr-code.jpg" alt="Google Pay QR Code" class="qr-code">
+
+            <div class="upload-section">
+              <label for="payment-proof">Upload Payment Screenshot <span class="required">*</span></label>
+              
+              <div class="custom-file-upload">
+                <label for="payment-proof" class="file-btn">Choose File</label>
+                <input type="file" id="payment-proof" accept="image/*" required>
+                <span class="file-name" id="payment-file-text">No file chosen</span>
+              </div>
+            </div>
           </div>
+
+          <!-- Neon Pill Button -->
+          <button type="submit" class="confirm-btn">Confirm Registration</button>
         </div>
 
-        <button type="submit" class="btn-register-big submit-btn">
-          <span>CONFIRM REGISTRATION</span>
-          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <p class="form-note">Fees are collected at the venue / by the committee on confirmation. Carry your college ID and fee receipt &mdash; entry isn't valid without them.</p>
+        <p class="form-note" style="text-align: center; margin-top: 15px;">Fees are collected at the venue / by the committee on confirmation. Carry your college ID and fee receipt &mdash; entry isn't valid without them.</p>
       </form>
     </section>
   </main>

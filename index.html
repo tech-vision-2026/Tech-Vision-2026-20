@@ -9,10 +9,12 @@
 </head>
 <body>
 
+  
+
   <!-- ================= PERMANENT VIDEO BACKGROUND ================= -->
-  <video autoplay loop muted playsinline class="bg-video-loop">
-    <source src="images/cyberpunk-bg.mp4" type="video/mp4">
-  </video>
+  <video autoplay loop muted playsinline preload="auto" poster="images/cyberpunk-bg-poster.jpg" class="bg-video-loop" style="background-color: #050505;">
+  <source src="images/cyberpunk-bg.mp4" type="video/mp4">
+</video>
 
   <!-- Full Page Click Trigger & Loading Info -->
   <div id="click-overlay">
@@ -91,9 +93,12 @@
     <!-- ============== HERO SECTION ============== -->
     <section id="top" class="hero-section">
       <div class="bg-circuit"></div>
-      <div class="hero-glass-card reveal">
+   <div class="hero-glass-card reveal glass-panel interactive">
         <span class="eyebrow">// 2026–27 · REENA MEHTA COLLEGE</span>
-        <h1 class="hero-title">TECH <span class="grad-text">VISION</span></h1>
+        <h1 class="hero-title">
+          <span class="glitch-hover" data-text="TECH">TECH</span> 
+          <span class="grad-text glitch-hover" data-text="VISION">VISION</span>
+        </h1>
         <p class="lede">Nine Events. One ultimate technology flow. Step up to compete and innovate.</p>
         <div class="hero-actions">
           <!-- <a href="register.html" class="btn-register-big">
@@ -108,7 +113,7 @@
     <!-- ============== ABOUT ============== -->
     <section id="about" class="section about-section">
       <div class="section-inner reveal">
-        <div class="about-glass-card">
+        <div class="about-glass-card glass-panel interactive">
           <span class="eyebrow">// ABOUT THE FEST</span>
           <h2 class="section-title">THE <span class="grad-text">FLOW</span></h2>
           <p class="lede">TECH VISION was first switched on in 2024. Nine events. One flow. Coders, creators, strategists and squads step up to learn, compete and innovate.</p>
@@ -126,15 +131,31 @@
     <section id="events" class="events-section">
       <div class="events-intro reveal">
         <span class="eyebrow">// THE EVENTS</span>
-        <h2 class="section-title">NINE EVENTS.<br><span class="grad-text">ONE FEST.</span></h2>
+        
+         <h2 class="section-title">
+  <span class="glitch-hover" data-text="NINE EVENTS.">NINE EVENTS.</span><br>
+  <span class="grad-text glitch-hover" data-text="ONE FEST.">ONE FEST.</span>
+</h2>
         <p class="lede">Explore the flow — every event is its own chapter, its own challenge.</p>
       </div>
 
-      <!-- NEW: Lag-free grid container -->
-      <div class="events-grid-container section-inner" id="events-grid-container">
-        <!-- Cards will be injected here via JavaScript -->
+      <!-- NEW: Lag-free grid container with Scroll Indicator -->
+      <div class="events-grid-wrapper" style="position: relative; width: 100%; min-height: 480px;">
+        
+        <!-- THIS WAS MISSING: JavaScript injects the cards exactly here -->
+        <div class="events-grid-container section-inner" id="events-grid-container">
+        </div>
+
+        <!-- Glowing Scroll Arrow -->
+        <button id="slide-right-btn" class="slide-right-btn" aria-label="Scroll Right">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
       </div>
     </section>
+        
+       
 
     <!-- ============== SCHEDULE ============== -->
     <section id="schedule" class="schedule-section">
@@ -143,7 +164,7 @@
         <h2 class="section-title">THE <span class="grad-text">SCHEDULE</span></h2>
       </div>
       <div class="day-cards">
-        <div class="day-card reveal">
+       <div class="day-card reveal glass-panel interactive">
           <div class="day-pill">DAY 1</div>
           <ul class="day-events">
             <li>Startup Idea Competition</li>
@@ -186,7 +207,7 @@
       <div class="committee-scroll-wrap reveal">
         <div class="committee-track">
           <!-- First Set of Cards -->
-          <div class="committee-card">
+          <div class="committee-card glass-panel">
             <span class="comm-role">Event Organizer</span>
             <span class="comm-name">Ashok Yadav</span>
           </div>
@@ -194,35 +215,24 @@
             <span class="comm-role">Event Co-Organizer</span>
             <span class="comm-name">Raju Kukade</span>
           </div>
-          <div class="committee-card">
+          <div class="committee-card glass-panel">
             <span class="comm-role">Event Incharge</span>
             <span class="comm-name">Imran Sekh</span>
           </div>
-          <div class="committee-card">
+          <div class="committee-card glass-panel">
             <span class="comm-role">Event Incharge</span>
             <span class="comm-name">Gautam Oganiya</span>
           </div>
-          <div class="committee-card">
+          <div class="committee-card glass-panel">
             <span class="comm-role">Event Head</span>
             <span class="comm-name">Muskan Maurya</span>
           </div>
-          <div class="committee-card">
+          <div class="committee-card glass-panel">
             <span class="comm-role">Event Head</span>
             <span class="comm-name">Shlok Sartandel</span>
           </div>
           
           <!-- Duplicate Set for Seamless Infinite Scroll Effect -->
-          <div class="committee-card">
-            <span class="comm-role">Event Organizer</span>
-            <span class="comm-name">Ashok Yadav</span>
-          </div>
-          <div class="committee-card">
-            <span class="comm-role">Event Co-Organizer</span>
-            <span class="comm-name">Raju Kukade</span>
-          </div>
-          <div class="committee-card">
-            <span class="comm-role">Event Incharge</span>
-            <span class="comm-name">Imran Sekh</span>
           </div>
           <div class="committee-card">
             <span class="comm-role">Event Incharge</span>
@@ -288,7 +298,7 @@
   <a href="register.html" class="floating-register" id="floating-register">Register</a>
 
   <script src="events-data.js"></script>
-  <script src="script.js"></script>
+
   <!-- ================= SECRET ADMIN PANEL ================= -->
   <div id="admin-overlay" class="hidden">
     <div class="admin-terminal">
@@ -322,5 +332,18 @@
     </div>
   </div>
 
+  <!-- NEW: The 3D WebGL Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- GSAP & Three.js Engines -->
+ <!-- GSAP & Three.js Engines -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  
+  <!-- Your existing script should be right below this -->
+  <script src="script.js"></script>
+</body>
+</html>
 </body>
 </html>
